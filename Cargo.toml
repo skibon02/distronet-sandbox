@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "distronet",
+    "client",
+    "server"
+]
+resolver = "2"

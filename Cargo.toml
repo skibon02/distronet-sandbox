@@ -1,7 +1,10 @@
 [workspace]
 members = [
     "distronet",
-    "client",
-    "server"
+    "server", 
+    "client"
 ]
 resolver = "2"
+exclude = [
+"cli-client"
+]

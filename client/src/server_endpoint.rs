@@ -9,7 +9,7 @@ pub struct ServerEndpoint {
 
 pub static KNOWN_ENDPOINTS: &'static [ServerEndpoint] = &[
     ServerEndpoint::new([185,104,249,231]),
-    ServerEndpoint::new([127, 0, 0, 1])
+    ServerEndpoint::new([127, 0, 0, 1]),
 ];
 
 impl ServerEndpoint {

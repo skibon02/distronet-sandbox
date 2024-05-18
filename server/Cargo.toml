@@ -11,6 +11,6 @@ tokio = { version = "1.37.0", features = ["full"] }
 serde = { version = "1.0.200", features = ["derive"] }
 log = { version = "0.4.21", features = ["serde"] }
 simple_logger = "5.0.0"
-rustls = "0.23.5"
+rustls = "0.23.7"
 tokio-rustls = "0.26.0"
 rustls-pemfile = "2.1.2"

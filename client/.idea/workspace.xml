@@ -8,26 +8,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6466efd-2d16-4b2e-b88f-b3bd6c430385" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/server_connection.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server_endpoint.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/user.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/util.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../distronet/src/assym_crypto.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../distronet/src/client.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../distronet/src/tcp_packets/client_storage.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../distronet/src/tcp_packets/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/client_storage/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/client_storage/server.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../server/openssl.cnf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cli-client/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../cli-client/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cli-client/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../cli-client/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cli-client/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../cli-client/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../distronet/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../distronet/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../distronet/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../distronet/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server_connection.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server_connection.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server_endpoint.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server_endpoint.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/client_storage/server.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/client_storage/server.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,11 +55,14 @@
     "git-widget-placeholder": "main",
     "last_opened_file_path": "/home/skygrel19/projects/distronet-sandbox/client",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
     "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
-    "settings.editor.selected.configurable": "http.proxy"
+    "settings.editor.selected.configurable": "http.proxy",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RunManager">
@@ -102,6 +97,7 @@
       <updated>1715242814260</updated>
       <workItem from="1715242815293" duration="3737000" />
       <workItem from="1715246556506" duration="4388000" />
+      <workItem from="1716033759155" duration="5143000" />
     </task>
     <servers />
   </component>

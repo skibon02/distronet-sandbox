@@ -12,9 +12,9 @@ pub struct DistronetClient {
 }
 
 impl DistronetClient {
-    pub fn new_connection(user: DistronetUser) -> Result<DistronetClient> {
+    pub async fn new_connection(user: DistronetUser) -> Result<DistronetClient> {
         for &endpoint in KNOWN_ENDPOINTS {
-            match ServerConnection::new(endpoint, &user) {
+            match ServerConnection::new(endpoint, &user).await {
                 Some(con) => {
                     info!("Successfully authorized on server!");
                     return Ok(DistronetClient {
@@ -33,11 +33,16 @@ impl DistronetClient {
     }
 
     // Send message to connected server
-    pub fn send(&mut self, data: &str) -> Result<()> {
-        info!("Sending data: {}", data);
-
+    pub async fn send(&mut self, data: String) -> Result<()> {
+        info!("Sending message: {}", data);
+        let res = self.server_connection.handle_transaction(data).await;
+        info!("Response from server: {}", res);
 
         Ok(())
+    }
+
+    pub async fn finalize(mut self) {
+        self.server_connection.finalize().await;
     }
 }
 

@@ -14,7 +14,7 @@ async fn main() {
 
     let mut tasks = Vec::new();
 
-    let tcp_server = ClientStorageServer::new(ClientStorage::restore()).await;
+    let tcp_server = ClientStorageServer::new(ClientStorage::restore()).await.unwrap();
     tasks.push(tokio::spawn(async move {
         tcp_server.run().await
     }));

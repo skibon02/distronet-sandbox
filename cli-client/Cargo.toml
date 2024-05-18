@@ -1,0 +1,9 @@
+[package]
+name = "cli-client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+client = {path = "../client"}
+log = "0.4.21"
+simple_logger = { version = "5.0.0", features = ["colored"] }

@@ -1,84 +1,73 @@
+use std::fs::File;
+use std::io::BufReader;
 use std::net::SocketAddr;
+use std::path::Path;
 use std::sync::Arc;
 use rustls::internal::msgs::codec::Codec;
 use rustls::pki_types::{CertificateDer, PrivateKeyDer};
-use rustls::server::{ClientHello};
+use rustls::server::{Acceptor, ClientHello};
 use rustls::ServerConfig;
-use tokio::fs;
-use tokio::io::{AsyncWriteExt, BufReader};
+use rustls_pemfile::{certs, rsa_private_keys};
+use tokio::{fs, io};
+use tokio::io::{AsyncWriteExt, copy, sink};
 use tokio::io::AsyncReadExt;
 use tokio::net::TcpListener;
+use tokio_rustls::TlsAcceptor;
 use crate::client_storage::ClientStorage;
 
 pub struct ClientStorageServer {
     client_storage: ClientStorage,
     tcp_listener: TcpListener,
+    acceptor: TlsAcceptor
+}
+fn load_certs(path: &Path) -> io::Result<Vec<CertificateDer<'static>>> {
+    certs(&mut BufReader::new(File::open(path)?)).collect()
 }
 
-async fn process_client(mut stream: tokio::net::TcpStream, addr: SocketAddr) -> Result<(), std::io::Error> {
-    let mut acceptor = Acceptor::default();
-    let accepted = loop {
-        acceptor.read_tls(&mut stream).unwrap();
-        if let Some(accepted) = acceptor.accept().unwrap() {
-            break accepted;
-        }
-    };
+fn load_keys(path: &Path) -> io::Result<PrivateKeyDer<'static>> {
+    rsa_private_keys(&mut BufReader::new(File::open(path)?))
+        .next()
+        .unwrap()
+        .map(Into::into)
+}
 
-    // For some user-defined choose_server_config:
-    let config = choose_server_config(accepted.client_hello());
-    let mut conn = accepted
-        .into_connection(config)
-        .unwrap();
+async fn process_client(stream: tokio::net::TcpStream, addr: SocketAddr, acceptor: TlsAcceptor) -> Result<(), std::io::Error> {
+    let mut stream = acceptor.accept(stream).await?;
 
-    loop {
-        if conn.wants_read() {
-            match conn.read_tls(&mut stream) {
-                Ok(0) => {
-                    info!("EOF");
-                    break;
-                }
-                Ok(_) => {
-                    if let Err(e) = conn.process_new_packets() {
-                        return e.into();
-                    }
-                    let mut plaintext = Vec::new();
-                    conn.reader().read_to_end(&mut plaintext).await?;
-                    info!("Received data: {:?}", plaintext);
-                }
-                Err(e) => {
-                    error!("Failed to read from stream: {:?}", e);
-                    return Err(e);
-                }
-            }
-        }
-        if conn.wants_write() {
-            conn.write_tls(&mut stream)?;
-        }
-    }
+    let mut output = sink();
+    stream
+        .write_all(
+            &b"Hello dear client, please provide your credentials (and your soul)\n"[..],
+        )
+        .await?;
+    stream.shutdown().await?;
+    copy(&mut stream, &mut output).await?;
+    println!("Hello: {}", addr);
 
     Ok(())
 
 }
 
-async fn choose_server_config(_client_hello: ClientHello) -> Arc<ServerConfig> {
-    let cert_chain = vec![
-        CertificateDer::read_bytes(&fs::read("cert.der").await.unwrap()).unwrap()
-    ];
-    let priv_key = PrivateKeyDer::try_from(fs::read("key.der").await.unwrap()).unwrap();
-    Arc::new(ServerConfig::builder()
-        .with_no_client_auth()
-        .with_single_cert(cert_chain, priv_key).unwrap()
-    )
-}
-
 impl ClientStorageServer {
-    pub async fn new(client_storage: ClientStorage) -> ClientStorageServer {
+    pub async fn new(client_storage: ClientStorage) -> Result<ClientStorageServer, std::io::Error> {
         let addr = "0.0.0.0:12345";
         let tcp_listener = TcpListener::bind(addr).await.unwrap();
-        ClientStorageServer {
+
+        let certs = load_certs(Path::new("certs.der"))?;
+        let key = load_keys(Path::new("key.der"))?;
+
+        // For some user-defined choose_server_config:
+        let config = rustls::ServerConfig::builder()
+            .with_no_client_auth()
+            .with_single_cert(certs, key)
+            .map_err(|err| io::Error::new(io::ErrorKind::InvalidInput, err))?;
+        let acceptor = TlsAcceptor::from(Arc::new(config));
+
+        Ok(ClientStorageServer {
             client_storage,
-            tcp_listener
-        }
+            tcp_listener,
+            acceptor
+        })
     }
 
     pub async fn run(&self) {
@@ -86,7 +75,8 @@ impl ClientStorageServer {
         loop {
             match self.tcp_listener.accept().await {
                 Ok((stream, addr)) => {
-                    tokio::spawn(process_client(stream, addr)).await.unwrap();
+                    let acceptor = self.acceptor.clone();
+                    tokio::spawn(process_client(stream, addr, acceptor)).await.unwrap();
                 }
                 Err(e) => {
                     warn!("Error: {:?}", e);

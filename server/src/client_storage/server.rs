@@ -29,7 +29,7 @@ fn load_keys(path: &Path) -> io::Result<PrivateKeyDer<'static>> {
         .unwrap())
 }
 
-async fn process_client(stream: tokio::net::TcpStream, addr: SocketAddr, acceptor: TlsAcceptor) -> Result<(), std::io::Error> {
+async fn process_client(stream: tokio::net::TcpStream, addr: SocketAddr, acceptor: TlsAcceptor) -> Result<(), io::Error> {
     let mut stream = acceptor.accept(stream).await?;
     println!("Client connected from {}!", addr);
 

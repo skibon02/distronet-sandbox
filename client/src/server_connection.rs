@@ -14,9 +14,13 @@ use tokio_rustls::client::TlsStream;
 use crate::server_endpoint::ServerEndpoint;
 use crate::user::DistronetUser;
 
+/// Represents an active connection to server.
+///
+/// When connection is established, user can send messages to the server and accept notifications.
+///
 pub struct ServerConnection {
     pub endpoint: ServerEndpoint,
-    pub tcp_stream: TlsStream<TcpStream>
+    pub tls_stream: TlsStream<TcpStream>
 }
 
 impl ServerConnection {
@@ -34,7 +38,7 @@ impl ServerConnection {
 
                 let config = rustls::ClientConfig::builder()
                     .with_root_certificates(root_cert_store)
-                    .with_no_client_auth(); // i guess this was previously the default?
+                    .with_no_client_auth();
                 let connector = TlsConnector::from(Arc::new(config));
 
                 let domain = pki_types::ServerName::IpAddress(IpAddr::try_from("127.0.0.1").unwrap());
@@ -57,7 +61,7 @@ impl ServerConnection {
 
                 Some(ServerConnection {
                     endpoint: server_endpoint,
-                    tcp_stream: stream
+                    tls_stream: stream
                 })
             },
             Err(e) => {
@@ -70,24 +74,26 @@ impl ServerConnection {
         // 1. send length
         let data_bytes = data.as_bytes();
         let len = data_bytes.len() as u32;
-        self.tcp_stream.write_all(&len.to_be_bytes()).await.unwrap();
+        self.tls_stream.write_all(&len.to_be_bytes()).await.unwrap();
 
         // 2. send data
-        self.tcp_stream.write_all(data_bytes).await.unwrap();
+        self.tls_stream.write_all(data_bytes).await.unwrap();
 
         // 3. read response
         let mut len_buf = [0u8; 4];
-        self.tcp_stream.read_exact(&mut len_buf).await.unwrap();
+        self.tls_stream.read_exact(&mut len_buf).await.unwrap();
         let len = u32::from_be_bytes(len_buf);
         info!("read incoming data length: {}", len);
 
         let mut buf = vec![0u8; len as usize];
-        self.tcp_stream.read_exact(&mut buf).await.unwrap();
+        self.tls_stream.read_exact(&mut buf).await.unwrap();
 
         String::from_utf8(buf).unwrap()
     }
 
     pub async fn finalize(mut self) {
-        self.tcp_stream.shutdown().await.unwrap()
+        if let Err(e) = self.tls_stream.shutdown().await {
+            warn!("Failed to shutdown connection: {:?}", e);
+        }
     }
 }
